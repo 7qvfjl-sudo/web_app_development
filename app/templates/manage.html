@@ -1,19 +1,97 @@
 {% extends "base.html" %}
 
-{% block title %}晚餐輪盤 — 管理清單{% endblock %}
+{% block title %}管理晚餐清單{% endblock %}
 
 {% block content %}
-<!-- TODO（階段六實作）：
-     - 新增品項表單（name、weight 欄位）
-     - 顯示所有品項列表（含停用）
-     - 每筆品項顯示：名稱、權重、啟用狀態、切換按鈕、刪除按鈕、修改權重欄位
-     - 若 msg 有值，顯示對應的操作結果提示訊息
--->
-<h1>管理晚餐清單</h1>
+<div class="row">
+    <!-- 左側：新增品項表單 -->
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-primary text-white border-0">
+                <h5 class="card-title mb-0"><i class="fas fa-plus-circle me-2"></i>新增晚餐選項</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('main.manage_add') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">品項名稱</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="例如：麥當勞、拉麵" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="weight" class="form-label">出現權重 (1-10)</label>
+                        <input type="number" class="form-control" id="weight" name="weight" value="1" min="1" max="10">
+                        <div class="form-text">權重越高，被抽中的機率越大。</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save me-1"></i> 新增到清單
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-{% if msg %}
-<p class="msg">{{ msg }}</p>
-{% endif %}
-
-<p>（品項管理頁面 — 待實作）</p>
+    <!-- 右側：品項列表 -->
+    <div class="col-md-8 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0"><i class="fas fa-list me-2"></i>目前的晚餐清單</h5>
+                <span class="badge bg-secondary">{{ items|length }} 個品項</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">品項名稱</th>
+                                <th>權重</th>
+                                <th>狀態</th>
+                                <th class="text-end pe-4">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr class="{% if not item.is_active %}table-light text-muted{% endif %}">
+                                <td class="ps-4">
+                                    <span class="fw-bold">{{ item.name }}</span>
+                                </td>
+                                <td style="width: 150px;">
+                                    <form action="{{ url_for('main.manage_weight', item_id=item.id) }}" method="POST" class="d-flex align-items-center">
+                                        <input type="number" name="weight" value="{{ item.weight }}" min="1" class="form-control form-control-sm me-2" style="width: 60px;">
+                                        <button type="submit" class="btn btn-outline-secondary btn-sm" title="更新權重">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('main.manage_toggle', item_id=item.id) }}" method="POST" class="d-inline">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" onchange="this.form.submit()" {% if item.is_active %}checked{% endif %}>
+                                            <label class="form-check-label small">
+                                                {{ '啟用中' if item.is_active else '已停用' }}
+                                            </label>
+                                        </div>
+                                    </form>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <form action="{{ url_for('main.manage_delete', item_id=item.id) }}" method="POST" class="d-inline" onsubmit="return confirm('確定要刪除「{{ item.name }}」嗎？')">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="fas fa-utensils fa-3x mb-3 d-block"></i>
+                                    目前還沒有任何晚餐選項，趕快新增一個吧！
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

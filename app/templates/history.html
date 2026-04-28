@@ -1,12 +1,47 @@
 {% extends "base.html" %}
 
-{% block title %}晚餐輪盤 — 歷史紀錄{% endblock %}
+{% block title %}抽籤歷史紀錄{% endblock %}
 
 {% block content %}
-<!-- TODO（階段六實作）：
-     - 顯示最近 20 筆歷史紀錄（item_name、drawn_at）
-     - 若 records 為空，顯示「尚無抽籤紀錄」
--->
-<h1>抽籤歷史紀錄</h1>
-<p>（歷史紀錄頁面 — 待實作）</p>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0 text-primary fw-bold">
+                    <i class="fas fa-history me-2"></i>抽籤歷史紀錄
+                </h4>
+                <span class="text-muted small">顯示最近 20 筆</span>
+            </div>
+            <div class="card-body p-0">
+                {% if records %}
+                <div class="list-group list-group-flush">
+                    {% for record in records %}
+                    <div class="list-group-item px-4 py-3 border-start border-4 {{ 'border-primary' if loop.first else 'border-light' }}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1 fw-bold">{{ record.item_name }}</h5>
+                                <p class="mb-0 text-muted small">
+                                    <i class="far fa-calendar-alt me-1"></i> {{ record.drawn_at }}
+                                </p>
+                            </div>
+                            {% if loop.first %}
+                            <span class="badge rounded-pill bg-primary">最新結果</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="fas fa-ghost fa-3x mb-3 d-block"></i>
+                    尚無抽籤紀錄，快去首頁轉一下輪盤吧！
+                    <div class="mt-3">
+                        <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-sm">前往首頁</a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

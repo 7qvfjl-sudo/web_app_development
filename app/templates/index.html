@@ -1,16 +1,125 @@
 {% extends "base.html" %}
 
-{% block title %}晚餐輪盤 — 首頁{% endblock %}
+{% block title %}首頁 - 晚餐輪盤{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* 首頁專屬微調，稍後會整合到 style.css */
+    .roulette-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    #wheel {
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+    }
+    .wheel-pointer {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        width: 40px;
+        height: 40px;
+        background: #ff4757;
+        clip-path: polygon(50% 100%, 0 0, 100% 0);
+        filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
+    }
+    .result-card {
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    .result-card.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- TODO（階段六實作）：
-     - 顯示轉盤 Canvas（依 items 的 name 與 weight 分割扇形）
-     - 若 items 為空，顯示提示「請先到管理頁面新增品項」
-     - 「轉動！」按鈕觸發 JS 呼叫 POST /roll 並播放動畫
-     - 動畫停止後顯示抽中結果
--->
-<h1>今天吃什麼？</h1>
-<p>（轉盤介面 — 待實作）</p>
+<div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-dark">今晚想吃點什麼？</h1>
+    <p class="lead text-muted">轉動輪盤，讓命運為您決定下一餐！</p>
+</div>
+
+<div class="row align-items-center">
+    <!-- 左側：輪盤 -->
+    <div class="col-lg-6 mb-5 mb-lg-0">
+        {% if items %}
+        <div class="roulette-container text-center">
+            <div class="wheel-pointer"></div>
+            <canvas id="wheel" width="500" height="500"></canvas>
+            
+            <div class="mt-4">
+                <button id="spin-btn" class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg">
+                    <i class="fas fa-play me-2"></i> 立即轉動！
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5 bg-light rounded-4 border border-dashed">
+            <i class="fas fa-plus-circle fa-4x text-muted mb-3 d-block"></i>
+            <h4>輪盤還是空的喔！</h4>
+            <p class="text-muted">請先前往管理頁面新增晚餐品項。</p>
+            <a href="{{ url_for('main.manage') }}" class="btn btn-primary mt-2">
+                <i class="fas fa-cog me-1"></i> 前往管理
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 右側：結果與目前的選項 -->
+    <div class="col-lg-6">
+        <!-- 抽籤結果 (初始隱藏) -->
+        <div id="result-display" class="result-card card border-0 shadow-lg mb-4 text-center">
+            <div class="card-body py-5">
+                <h6 class="text-uppercase text-primary ls-2 fw-bold mb-3">恭喜抽中</h6>
+                <h2 id="winner-name" class="display-3 fw-bold mb-0 text-dark">---</h2>
+                <div class="mt-4">
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill" onclick="resetRoulette()">
+                        <i class="fas fa-undo me-1"></i> 再轉一次
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 目前啟用的選項清單 -->
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2"></i>參與抽籤的品項</h5>
+            </div>
+            <div class="card-body pt-0">
+                <div class="d-flex flex-wrap gap-2">
+                    {% for item in items %}
+                    <span class="badge bg-light text-dark border p-2 px-3 rounded-pill">
+                        {{ item.name }} <span class="text-muted ms-1 small">({{ item.weight }})</span>
+                    </span>
+                    {% else %}
+                    <span class="text-muted small">尚未設定品項。</span>
+                    {% endfor %}
+                </div>
+                <div class="mt-3 text-end">
+                    <a href="{{ url_for('main.manage') }}" class="text-decoration-none small fw-bold">
+                        修改清單 <i class="fas fa-arrow-right ms-1 small"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 傳遞資料給 JS -->
+<script>
+    const rouletteData = [
+        {% for item in items %}
+        { "id": {{ item.id }}, "name": "{{ item.name }}", "weight": {{ item.weight }} }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
 {% endblock %}
 
 {% block scripts %}

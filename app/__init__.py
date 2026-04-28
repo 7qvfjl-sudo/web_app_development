@@ -37,7 +37,7 @@ def create_app(config=None) -> Flask:
     def init_db_command():
         """執行 `flask init-db` 初始化資料庫（建立資料表）。"""
         _init_db(app)
-        print("✅ 資料庫初始化完成。")
+        print("資料庫初始化完成。")
 
     # --- 自動關閉資料庫連線 ---
     @app.teardown_appcontext
