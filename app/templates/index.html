@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}晚餐輪盤 — 首頁{% endblock %}
+
+{% block content %}
+<!-- TODO（階段六實作）：
+     - 顯示轉盤 Canvas（依 items 的 name 與 weight 分割扇形）
+     - 若 items 為空，顯示提示「請先到管理頁面新增品項」
+     - 「轉動！」按鈕觸發 JS 呼叫 POST /roll 並播放動畫
+     - 動畫停止後顯示抽中結果
+-->
+<h1>今天吃什麼？</h1>
+<p>（轉盤介面 — 待實作）</p>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/roulette.js') }}"></script>
+{% endblock %}

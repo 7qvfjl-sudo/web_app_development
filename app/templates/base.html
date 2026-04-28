@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}晚餐輪盤{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- 導覽列 -->
+    <nav class="navbar">
+        <a href="{{ url_for('main.index') }}" class="nav-brand">🎡 晚餐輪盤</a>
+        <div class="nav-links">
+            <a href="{{ url_for('main.index') }}">首頁</a>
+            <a href="{{ url_for('main.manage') }}">管理清單</a>
+            <a href="{{ url_for('main.history') }}">歷史紀錄</a>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="footer">
+        <p>🍽️ 晚餐輪盤系統 &copy; 2024</p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

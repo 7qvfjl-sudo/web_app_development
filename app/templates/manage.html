@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}晚餐輪盤 — 管理清單{% endblock %}
+
+{% block content %}
+<!-- TODO（階段六實作）：
+     - 新增品項表單（name、weight 欄位）
+     - 顯示所有品項列表（含停用）
+     - 每筆品項顯示：名稱、權重、啟用狀態、切換按鈕、刪除按鈕、修改權重欄位
+     - 若 msg 有值，顯示對應的操作結果提示訊息
+-->
+<h1>管理晚餐清單</h1>
+
+{% if msg %}
+<p class="msg">{{ msg }}</p>
+{% endif %}
+
+<p>（品項管理頁面 — 待實作）</p>
+{% endblock %}
